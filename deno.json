@@ -1,0 +1,24 @@
+{
+	"exclude": ["_site"],
+	"tasks": {
+		"lume": "echo \"import 'lume/cli.ts'\" | deno run --unstable -A -",
+		"build": "MINIFY=1 deno task lume",
+		"serve": "deno task lume -s"
+	},
+	"fmt": {
+		"semiColons": false,
+		"lineWidth": 100,
+		"useTabs": true,
+		"proseWrap": "never"
+	},
+	"compilerOptions": {
+		"types": ["lume/types.ts"],
+		"exactOptionalPropertyTypes": true,
+		"noErrorTruncation": true
+	},
+	"unstable": ["ffi", "http"],
+	"nodeModulesDir": false,
+	"imports": {
+		"lume/": "https://deno.land/x/lume@v2.0.1/"
+	}
+}
