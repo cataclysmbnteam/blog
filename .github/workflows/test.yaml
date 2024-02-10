@@ -34,4 +34,4 @@ jobs:
         with:
           deno-version: ${{ matrix.deno }}
       - name: Run unit tests on Deno
-        run: deno test
+        run: deno test --allow-none
