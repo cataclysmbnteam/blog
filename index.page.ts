@@ -18,12 +18,9 @@ export const section = (render: Renderer) => (page: Lume.Page["data"]): string =
 export default ({ search }: Lume.Data, { md }: Lume.Helpers): string => {
 	const pages = search.pages()
 		.filter((page) => page.page.src.ext === ".md")
-		.reverse()
-
-	const [newest, oldest] = [pages[0], pages.at(-1)!]
+		.sort((a, b) => new Date(b.basename).valueOf() - new Date(a.basename).valueOf())
 
 	return /*html*/ `
-        <!-- 기간: ${time(oldest.basename)}/${time(newest.basename)} -->
         <section>
             ${pages.map(section(md)).join("\n")}
         </section>
