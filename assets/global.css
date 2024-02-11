@@ -1,0 +1,60 @@
+:root {
+    --width: 800px;
+}
+
+/* @media (width < 800px) {
+    body {
+        margin-left: 0;
+    }
+
+    main {
+        align-items: flex-start;
+        margin: 0;
+    }
+}
+
+@media (width >=800px) {
+    body {
+        margin: auto 10vw;
+    }
+} */
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+
+    margin: auto 10vw;
+}
+
+main {
+    max-width: var(--width);
+}
+
+footer {
+    margin: 2em auto;
+}
+
+/* hr {
+    width: 100%;
+} */
+
+img {
+    max-width: min(100%, var(--width));
+    height: auto;
+    object-fit: contain;
+}
+
+a {
+    text-decoration-line: underline;
+}
+
+li code {
+    font-size: 1rem;
+}
+
+h1,
+h2,
+h3 {
+    line-height: 1.2;
+}

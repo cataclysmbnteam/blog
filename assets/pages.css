@@ -1,0 +1,26 @@
+article {
+    display: grid;
+    margin-bottom: auto;
+    grid-template-columns: repeat(auto-fit, minmax(12em, calc(var(--width) / 4)));
+}
+
+main {
+    grid-column-end: span 4;
+}
+
+aside {
+
+    h1,
+    h2,
+    h3 {
+        margin: 0.5em auto;
+    }
+
+    ul {
+        padding-left: 1em;
+    }
+
+    nav > ul {
+        display: grid;
+    }
+}

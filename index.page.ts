@@ -1,5 +1,8 @@
 export const layout = "base.ts"
-export const title = "카타클리즘: 밝은 밤 변경 내역"
+export const title = "최근 변경 내역"
+export const head = /*html*/`
+    <link rel="stylesheet" href="/assets/index.css" inline />
+`
 
 type Renderer = (content: string, inline?: boolean | undefined) => string
 
@@ -18,11 +21,14 @@ export const section = (render: Renderer) => (page: Lume.Page["data"]): string =
 export default ({ search }: Lume.Data, { md }: Lume.Helpers): string => {
 	const pages = search.pages()
 		.filter((page) => page.page.src.ext === ".md")
-		.sort((a, b) => new Date(b.basename).valueOf() - new Date(a.basename).valueOf())
+		.sort((a, b) => b.date.valueOf() - a.date.valueOf())
+		.slice(0, 7)
 
 	return /*html*/ `
-        <section>
-            ${pages.map(section(md)).join("\n")}
-        </section>
+        <main>
+            <section>
+                ${pages.map(section(md)).join("\n")}
+            </section>
+        </main>
     `
 }
