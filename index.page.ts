@@ -1,33 +1,110 @@
+import { mapValues } from "https://deno.land/std@0.215.0/collections/map_values.ts"
+import { maxWith } from "https://deno.land/std@0.215.0/collections/max_with.ts"
+
 export const layout = "base.ts"
-export const title = "카타클리즘: 밝은 밤 변경 내역"
-export const head = /*html*/ `
-    <link rel="stylesheet" href="/assets/list.css" inline />
-`
-type Renderer = (content: string) => string
+export const lang = "ko"
 
-export const time = (time: string): string => /*html*/ `
-    <time datetime="${time}">${time}</time>
-`
+type Renderer = (content: string, inline?: boolean | undefined) => string
 
-export const section = (render: Renderer) => (page: Lume.Page["data"]): string => /*html*/ `
-    <li>
+export const article = (render: Renderer) => (page: Lume.Page["data"]): string => /*html*/ `
+    <article>
         <h2 id="${page.basename}">
             <a href="#${page.basename}">${page.basename}</a>
         </h2>
         ${render(page.content as string)}
-    </li>`
+    </article>`
 
-export default ({ search }: Lume.Data, { md }: Lume.Helpers): string => {
-	const pages = search.pages()
-		.filter((page) => page.page.src.ext === ".md")
-		.reverse()
+export const toUl = (xs?: string[]) => xs ? /*html*/ `<ul>${xs.join("\n")}</ul>` : ""
 
-	const [newest, oldest] = [pages[0], pages.at(-1)!]
+export const toISODate = (date: Date) => date.toISOString().split("T")[0]
+export const time = (x: string | Temporal.PlainDate) => /*html*/ `<time datetime="${x}">${x}</time>`
+export const toPlainDate = (x: Date) => Temporal.PlainDate.from(toISODate(x))
 
-	return /*html*/ `
-        기간: ${time(oldest.basename)}/${time(newest.basename)}
-        <ul>
-            ${pages.map(section(md)).join("\n")}
-        </ul>
-    `
+const localeFormatter = new Intl.DateTimeFormat("ko-KR", {
+	month: "2-digit",
+	day: "2-digit",
+	weekday: "narrow",
+})
+
+export default function* ({ search }: Lume.Data, { md }: Lume.Helpers) {
+	const pages = search.pages(`category=post lang=${lang}`)
+
+	const grouped = Object.groupBy(pages, (page) => {
+		const plainDate = Temporal.PlainDate.from(toISODate(page.date))
+
+		// FIXME: yearOfWeek != year in some cases
+		// use `yearOfWeek` after https://github.com/denoland/deno/issues/22385 is fixed
+		return `${plainDate.year}-W${plainDate.weekOfYear}`
+	})
+	const weekly = Object.entries(grouped).map(([isoWeek, pages]) => {
+		const earliest = toPlainDate(pages!.reduce((a, b) => (a.date < b.date ? a : b)).date)
+		const latest = toPlainDate(pages!.reduce((a, b) => (a.date > b.date ? a : b)).date)
+		const range = localeFormatter.formatRange(earliest, latest)
+
+		const content = /*html*/ `
+            <main>
+                <header>
+                    <h1>${range}</h1>
+                    ${time(isoWeek)}
+                </header>
+                <hr />
+                ${pages!.map(article(md)).join("\n")}
+            </main>
+        `
+
+		return {
+			url: `/pages/${isoWeek}/`,
+			title: isoWeek,
+			content,
+			earliest,
+			latest,
+		}
+	})
+
+	const yearly = Object.groupBy(weekly, (page) => page.earliest.year)
+	const monthly = mapValues(
+		yearly,
+		(months) => Object.groupBy(months!, (page) => page.earliest.month),
+	)
+	const links = Object.entries(monthly).map(([year, months]) => {
+		const result = Object.entries(months).map(([month, weeks]) => {
+			const result = weeks!.map((page) => /*html*/ `
+                <li>
+                    <a href="/${lang}/${page.url}">
+                    ${localeFormatter.formatRange(page.earliest, page.latest)}
+                    </a>
+                </li>
+            `)
+			return /*html*/ `<li>${month}${toUl(result)}</li>`
+		})
+
+		return /*html*/ `
+            <li>
+                <h2>${year}</h2>
+                ${toUl(result)}
+            </li>
+        `
+	})
+
+	const latestContent =
+		maxWith(weekly, (a, b) => Temporal.PlainDate.compare(a.latest, b.latest))!.content
+
+	yield {
+		url: `/${lang}/`,
+		title: "최근 변경 내역",
+		content: latestContent,
+	}
+	yield {
+		url: `/${lang}/pages/`,
+		title: "전체 변경 내역",
+		head: /*html*/ `
+            <link rel="stylesheet" href="/assets/pages.css" inline />
+        `,
+		content: /*html*/ `
+            <nav aria-labelledby="pages-archive-navigation">
+                ${toUl(links)}
+            </nav>
+        `,
+	}
+	yield* weekly
 }

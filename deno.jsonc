@@ -16,9 +16,9 @@
 		"exactOptionalPropertyTypes": true,
 		"noErrorTruncation": true
 	},
-	"unstable": ["ffi", "http"],
+	"unstable": ["temporal"],
 	"nodeModulesDir": false,
 	"imports": {
-		"lume/": "https://deno.land/x/lume@v2.0.1/"
+		"lume/": "https://raw.githubusercontent.com/lumeland/lume/9cf2345745ec575e11c15684c4157166d500d2e4/"
 	}
 }
