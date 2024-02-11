@@ -1,9 +1,8 @@
 import { lume } from "./lume_core.ts"
 import type { Processor } from "lume/core/processors.ts"
 
-// import multilanguage from "lume/plugins/multilanguage.ts"
+import multilanguage from "lume/plugins/multilanguage.ts"
 import relativeUrls from "lume/plugins/relative_urls.ts"
-import nav from "lume/plugins/nav.ts"
 import inline from "lume/plugins/inline.ts"
 import minifyHTML from "lume/plugins/minify_html.ts"
 
@@ -22,9 +21,8 @@ const addMeta: Processor = (pages) =>
 
 site
 	.preprocess([".md"], addMeta)
-	.use(nav())
-	// .use(multilanguage({ languages: ["ko"] }))
 	.use(relativeUrls())
+	.use(multilanguage({ languages: ["ko"] }))
 
 if (Deno.env.get("MINIFY")) {
 	site

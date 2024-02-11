@@ -5,6 +5,8 @@ declare global {
              * content to inline into HTML `<head>` element
              */
 			head?: string
+
+            category?: "post"
 		}
 	}
 }
