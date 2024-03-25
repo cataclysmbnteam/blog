@@ -1,13 +1,15 @@
 export const repo = "https://github.com/scarf005/bn-blog"
 
-const header = /*html*/ `
+const header = (lang: string) => /*html*/ `
     <header>
         <h1>
-            <a href="/">카타클리즘: 밝은 밤 블로그</a>
+            <a href="/${lang}/">카타클리즘: 밝은 밤 블로그</a>
         </h1>
         <nav aria-labelledby="recent-changes-navigation">
-            <a href="/ko/">최근 내역</a>
-            <a href="/ko/pages">전체 내역</a>
+            <a href="/${lang}/">최근 내역</a>
+            <a href="/${lang}/pages">전체 내역</a>
+            <a href="/${lang}/contributing">기여하기</a>
+            <a href="https://github.com/cataclysmbnteam/Cataclysm-BN/releases">게임 플레이하기</a>
         </nav>
     </header>
 `
@@ -20,9 +22,9 @@ const footer = /*html*/ `
     </footer>
 `
 
-const render = (title: string, { content, head = "" }: Lume.Data): string => /*html*/ `
+const render = (title: string, { content, lang = "en", head = "" }: Lume.Data): string => /*html*/ `
     <!DOCTYPE html>
-    <html lang="ko">
+    <html lang="${lang}">
         <head>
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -31,7 +33,7 @@ const render = (title: string, { content, head = "" }: Lume.Data): string => /*h
             ${head}
         </head>
         <body>
-            ${header}
+            ${header(lang)}
             <hr />
             ${content}
             ${footer}
