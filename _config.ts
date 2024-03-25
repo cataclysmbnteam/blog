@@ -10,7 +10,7 @@ const site = lume()
 
 site
 	.copy([".css"])
-	.ignore("./README.md", "./CONTRIBUTING.md")
+	.ignore("./README.md")
 	.data("layout", "_includes/base.ts")
 
 const addMeta: Processor = (pages) =>
