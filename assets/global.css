@@ -9,6 +9,7 @@ body {
 
     --margin: calc(100vw - var(--width));
     margin: auto max(0vw, calc(var(--margin) / 2));
+    padding: 0 1em;
 }
 
 main {
@@ -38,6 +39,11 @@ nav {
     margin-bottom: auto;
 }
 
+nav {
+    display: flex;
+    gap: 0.5em;
+}
+
 footer {
     margin: 1em auto;
 }
@@ -64,4 +70,8 @@ h1,
 h2,
 h3 {
     line-height: 1.2;
+}
+
+code {
+    background-color: bisque;
 }
