@@ -53,7 +53,7 @@ export default function* ({ search }: Lume.Data, { md }: Lume.Helpers) {
         `
 
 		return {
-            lang,
+			lang,
 			url: `/pages/${isoWeek}/`,
 			title: isoWeek,
 			content,
