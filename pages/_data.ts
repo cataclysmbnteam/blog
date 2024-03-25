@@ -1,4 +1,4 @@
-import { basename } from "https://deno.land/std@0.215.0/path/basename.ts"
+import { basename } from "$std/path/basename.ts"
 
 export const lang = "ko"
 export const category = "post"
