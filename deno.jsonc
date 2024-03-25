@@ -19,6 +19,7 @@
 	"unstable": ["temporal"],
 	"nodeModulesDir": false,
 	"imports": {
-		"lume/": "https://raw.githubusercontent.com/lumeland/lume/9cf2345745ec575e11c15684c4157166d500d2e4/"
+		"$std/": "https://deno.land/std@0.220.1/",
+		"lume/": "https://deno.land/x/lume@v2.1.2/"
 	}
 }

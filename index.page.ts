@@ -1,5 +1,5 @@
-import { mapValues } from "https://deno.land/std@0.215.0/collections/map_values.ts"
-import { maxWith } from "https://deno.land/std@0.215.0/collections/max_with.ts"
+import { mapValues } from "$std/collections/map_values.ts"
+import { maxWith } from "$std/collections/max_with.ts"
 
 export const layout = "base.ts"
 export const lang = "ko"
@@ -34,7 +34,7 @@ export default function* ({ search }: Lume.Data, { md }: Lume.Helpers) {
 
 		// FIXME: yearOfWeek != year in some cases
 		// use `yearOfWeek` after https://github.com/denoland/deno/issues/22385 is fixed
-		return `${plainDate.year}-W${plainDate.weekOfYear}`
+		return `${plainDate.year}-W${`${plainDate.weekOfYear}`.padStart(2, "0")}`
 	})
 	const weekly = Object.entries(grouped).map(([isoWeek, pages]) => {
 		const earliest = toPlainDate(pages!.reduce((a, b) => (a.date < b.date ? a : b)).date)
@@ -53,6 +53,7 @@ export default function* ({ search }: Lume.Data, { md }: Lume.Helpers) {
         `
 
 		return {
+            lang,
 			url: `/pages/${isoWeek}/`,
 			title: isoWeek,
 			content,
@@ -75,7 +76,7 @@ export default function* ({ search }: Lume.Data, { md }: Lume.Helpers) {
                     </a>
                 </li>
             `)
-			return /*html*/ `<li>${month}${toUl(result)}</li>`
+			return /*html*/ `<li>${`${month}`.padStart(2, "0")}${toUl(result)}</li>`
 		})
 
 		return /*html*/ `
@@ -90,11 +91,13 @@ export default function* ({ search }: Lume.Data, { md }: Lume.Helpers) {
 		maxWith(weekly, (a, b) => Temporal.PlainDate.compare(a.latest, b.latest))!.content
 
 	yield {
+		lang,
 		url: `/${lang}/`,
 		title: "최근 변경 내역",
 		content: latestContent,
 	}
 	yield {
+		lang,
 		url: `/${lang}/pages/`,
 		title: "전체 변경 내역",
 		head: /*html*/ `
