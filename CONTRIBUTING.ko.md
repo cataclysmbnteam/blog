@@ -55,7 +55,9 @@ $ deno run -A https://deno.land/std/http/file_server.ts _site
 
 `https://github.com/cataclysmbnteam/Cataclysm-BN/pull/4277` -->
 
-## PR 만들기
+## 글 등록하기
+
+블로그 글을 등록하려면 [PR(Pull Request)](https://docs.github.com/ko/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)을 만들어야 합니다.
 
 1. `git switch -c 브랜치이름`으로 새 브랜치를 생성합니다.
 2. 새로운 Pull Request를 생성합니다.
