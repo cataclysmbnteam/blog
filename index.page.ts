@@ -1,5 +1,6 @@
 import { mapValues } from "$std/collections/map_values.ts"
 import { maxWith } from "$std/collections/max_with.ts"
+import type { Data } from "lume/core/file.ts"
 
 export const layout = "base.ts"
 export const lang = "ko"
@@ -26,6 +27,14 @@ const localeFormatter = new Intl.DateTimeFormat("ko-KR", {
 	weekday: "narrow",
 })
 
+type WeeklyEntry = {
+	isoWeek: string
+	earliest: Temporal.PlainDate
+	latest: Temporal.PlainDate
+	range: string
+	pages: Data[] | undefined
+}
+
 export default function* ({ search }: Lume.Data, { md }: Lume.Helpers) {
 	const pages = search.pages(`category=post lang=${lang}`)
 
@@ -36,31 +45,51 @@ export default function* ({ search }: Lume.Data, { md }: Lume.Helpers) {
 		// use `yearOfWeek` after https://github.com/denoland/deno/issues/22385 is fixed
 		return `${plainDate.year}-W${`${plainDate.weekOfYear}`.padStart(2, "0")}`
 	})
-	const weekly = Object.entries(grouped).map(([isoWeek, pages]) => {
+
+	const weeklyData: WeeklyEntry[] = Object.entries(grouped).map(([isoWeek, pages]) => {
 		const earliest = toPlainDate(pages!.reduce((a, b) => (a.date < b.date ? a : b)).date)
 		const latest = toPlainDate(pages!.reduce((a, b) => (a.date > b.date ? a : b)).date)
 		const range = localeFormatter.formatRange(earliest, latest)
 
-		const content = /*html*/ `
+		return { isoWeek, earliest, latest, range, pages }
+	})
+
+	const weekly = weeklyData.map(({ isoWeek, pages, earliest, latest, range }) => ({
+		lang,
+		latest,
+		earliest,
+		url: `/pages/${isoWeek}/`,
+		title: isoWeek,
+		content: /*html*/ `
             <main>
                 <header>
                     <h1>${range}</h1>
-                    ${time(isoWeek)}
+                    <a href="/${lang}/pages/${isoWeek}/">${time(isoWeek)}</a>
                 </header>
                 <hr />
                 ${pages!.map(article(md)).join("\n")}
             </main>
-        `
+        `,
+	}))
 
-		return {
-			lang,
-			url: `/pages/${isoWeek}/`,
-			title: isoWeek,
-			content,
-			earliest,
-			latest,
-		}
-	})
+	const weeklySummary = weeklyData.map(({ isoWeek, pages, range }) => ({
+		lang,
+		url: `/${lang}/pages/${isoWeek}/summary.txt`,
+		title: `${range} 변경 내역`,
+		layout: null,
+		content: pages!
+			.map((page) =>
+				page.basename + "\n" + (page.content as string)
+					.replace(/!\[.*\]\(.*\)\n/g, "")
+					// remove all html tags
+					.replace(/<[^>]*>.*\n/g, "")
+					// strip away all markdown links into `- {text}`
+					.replace(/\[([^\]]*)\]\([^)]*\)\n+/g, "$1\n")
+					// convert all headers to `*`
+					.replace(/#+\s*(.*)\n+/g, "\n* $1\n\n") +
+				"\n"
+			).join("\n"),
+	}))
 
 	const yearly = Object.groupBy(weekly, (page) => page.earliest.year)
 	const monthly = mapValues(
@@ -110,4 +139,5 @@ export default function* ({ search }: Lume.Data, { md }: Lume.Helpers) {
         `,
 	}
 	yield* weekly
+	yield* weeklySummary
 }
