@@ -116,14 +116,25 @@ export default function* ({ search }: Lume.Data, { md }: Lume.Helpers) {
         `
 	})
 
-	const latestContent =
-		maxWith(weekly, (a, b) => Temporal.PlainDate.compare(a.latest, b.latest))!.content
+	const last14days = pages
+		.toSorted((a, b) => Temporal.PlainDate.compare(toPlainDate(b.date), toPlainDate(a.date)))
+		.slice(0, 14)
 
 	yield {
 		lang,
 		url: `/${lang}/`,
 		title: "최근 변경 내역",
-		content: latestContent,
+		content: /*html*/ `
+            <main>
+                <header>
+                    <h1>${
+			localeFormatter.formatRange(last14days.at(-1)!.date, last14days.at(0)!.date)
+		}</h1>
+                </header>
+                <hr />
+                ${last14days.map(article(md)).join("\n")}
+            </main>
+        `,
 	}
 	yield {
 		lang,
