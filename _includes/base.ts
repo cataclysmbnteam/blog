@@ -7,7 +7,8 @@ const header = (lang: string) => /*html*/ `
         </h1>
         <nav aria-labelledby="recent-changes-navigation">
             <a href="/${lang}/">최근 내역</a>
-            <a href="/${lang}/pages">전체 내역</a>
+            <a href="/${lang}/pages">실험판 내역</a>
+            <a href="/${lang}/stables">안정판 내역</a>
             <a href="/${lang}/contributing">기여하기</a>
             <a href="https://github.com/cataclysmbnteam/Cataclysm-BN/releases">게임 플레이하기</a>
         </nav>

@@ -1,5 +1,4 @@
 import { mapValues } from "$std/collections/map_values.ts"
-import { maxWith } from "$std/collections/max_with.ts"
 import type { Data } from "lume/core/file.ts"
 
 export const layout = "base.ts"
